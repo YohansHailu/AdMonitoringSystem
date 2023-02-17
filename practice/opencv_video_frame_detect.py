@@ -134,8 +134,8 @@ def are_matching_template_matching(frame_a, frame_b):
 #res = matching_frame_in_video(walia_ad_file_name, walia_beer_frame)
 
 
-frame_a = cv2.imread("./sample_rand_frame.jpg")
-walia_ad_file_name  = "./WALIA BEER TVC (Directors' Cut) [DPJBDupSiwA].webm"
+frame_a = cv2.imread("./data_file/sample_rand_frame.jpg")
+walia_ad_file_name  = "./data_file/WALIA BEER TVC (Directors' Cut) [DPJBDupSiwA].webm"
 res = matching_frame_in_video(walia_ad_file_name, frame_a)
 print(res)
 
