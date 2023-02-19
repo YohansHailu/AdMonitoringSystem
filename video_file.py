@@ -13,6 +13,7 @@ class VideoFile:
     def get_last_frame(self):
         self.video.set(cv2.CAP_PROP_POS_FRAMES, self.total_frames - 1)
         ret, frame = self.video.read()
+        self.video.set(cv2.CAP_PROP_POS_FRAMES, 0)
         if ret:
             return frame
         return None
