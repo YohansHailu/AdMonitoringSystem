@@ -22,11 +22,18 @@ def test_matching_func(func, frame1, frame2):
     print("frame2 is equal to frame1: ", res)
 
     # change the brightness of frame2
-    bright_frame2 = cv2.convertScaleAbs(frame2, beta=150)
+    bright_frame2 = cv2.convertScaleAbs(frame2, beta=50)
 
     # compare frame2 with bright_frame2
     res = func(frame2, bright_frame2)
     print("frame2 is equal to bright_frame2: ", res)
+    
+    # change the brightness of frame2
+    too_bright_frame2 = cv2.convertScaleAbs(frame2, beta=150)
+
+    # compare frame2 with bright_frame2
+    res = func(frame2, too_bright_frame2)
+    print("frame2 is equal to too_bright_frame2: ", res)
 
     # crop half_width
     h, w, c = frame1.shape
@@ -68,5 +75,7 @@ frame1 = video_file.get_random_frame()
 frame2 = video_file.get_random_frame()
 
 # test all function in frame_matching_algos.py using the test_matching_func
-for func in [fma.sift_knn, fma.template_matching]:
-    test_matching_func(func, frame1, frame2)
+for func_name in dir(fma):
+    func = getattr(fma, func_name) 
+    if callable(func) and (func_name in ["orb"]):
+        test_matching_func(func, frame1, frame2)
