@@ -2,7 +2,7 @@ import cv2
 import numpy as np
 
 #Check if two frames match using knn and SIFT_create
-def sift(frame_a, frame_b):
+def sift(frame_a, frame_b,  threshold = 0.4):
     sift = cv2.xfeatures2d.SIFT_create()
 
     _, des1 = sift.detectAndCompute(frame_a, None)
@@ -19,12 +19,18 @@ def sift(frame_a, frame_b):
         if m.distance < 0.75 * n.distance:
           good_matches += 1
 
-    match_ratio = good_matches / min(len(des1), len(des2))
+    num_matches = good_matches
+    denom_matches = min(len(des1), len(des2))
 
-    return match_ratio > 0.4
+    if denom_matches == 0:
+        return False
+
+    match_ratio = num_matches / denom_matches
+
+    return match_ratio > threshold
 
 # Check if two frames match using surf
-def surf(frame_a, frame_b):
+def surf(frame_a, frame_b, threshold = 0.5):
     # Detect keypoints and compute descriptors for both images
     surf = cv2.xfeatures2d.SURF_create()
     kp1, des1 = surf.detectAndCompute(frame_a, None)
@@ -42,17 +48,24 @@ def surf(frame_a, frame_b):
         if m.distance < 0.75 * n.distance:
             good_matches.append(m)
 
+    
     # Calculate a similarity score based on the number of good matches
-    similarity = len(good_matches) / min(len(kp1), len(kp2))
+    num_matches = len(good_matches)
+    denom_matches = min(len(kp1), len(kp2))
 
+
+    if denom_matches == 0:
+        return False
+
+    similarity = num_matches / denom_matches
     # Return a Boolean value indicating whether the two images are similar
-    return similarity >= 0.5
+    return similarity >= threshold 
 
 # using orb
-def orb(frame_a, frame_b):
+def orb(frame_a, frame_b, treshold = 0.5):
     # Convert the images to grayscale
-    #gray1 = cv2.cvtColor(frame_a, cv2.COLOR_BGR2GRAY)
-    #gray2 = cv2.cvtColor(frame_b, cv2.COLOR_BGR2GRAY)
+    frame_a = cv2.cvtColor(frame_a, cv2.COLOR_BGR2GRAY)
+    frame_b = cv2.cvtColor(frame_b, cv2.COLOR_BGR2GRAY)
 
     # Create an ORB object
     orb = cv2.ORB_create()
@@ -71,13 +84,21 @@ def orb(frame_a, frame_b):
     matches = sorted(matches, key=lambda x:x.distance)
 
     # Calculate a similarity score based on the number of good matches
-    similarity = len(matches) / min(len(kp1), len(kp2))
+
+    num_matches = len(matches)
+    denom_matches = min(len(kp1), len(kp2))
+
+
+    if denom_matches == 0:
+        return False
+
+    similarity = num_matches / denom_matches
 
     # Return a Boolean value indicating whether the two images are similar
-    return similarity >= 0.7 
+    return similarity >= treshold
 
 # akaze algorithm
-def akaze(frame_a, frame_b):
+def akaze(frame_a, frame_b, threshold = 0.5):
 
     # Initialize the AKAZE detector and descriptor
     akaze = cv2.AKAZE_create()
@@ -97,7 +118,7 @@ def akaze(frame_a, frame_b):
         if distance > max_distance:
             max_distance = distance
 
-    distance_threshold = 0.5* max_distance
+    distance_threshold = threshold * max_distance
 
     # Count the number of matches that pass the distance threshold
     num_good_matches = 0
@@ -111,7 +132,7 @@ def akaze(frame_a, frame_b):
 
 
 # Check if two frames match using template matching
-def template_matching(frame_a, frame_b):
+def template_matching(frame_a, frame_b, threshold = 0.8 ):
     height, width = frame_b.shape[:2]
     frame_a = cv2.resize(frame_a, (width, height))
 
@@ -119,14 +140,13 @@ def template_matching(frame_a, frame_b):
     result = cv2.matchTemplate(frame_a, frame_b, cv2.TM_CCOEFF_NORMED)
     _, max_val, _, _ = cv2.minMaxLoc(result)
 
-    threshold = 0.8
     if max_val > threshold:
         return True
     else:
         return False
 
 # Check if two frames match using xor
-def are_matching_xor(frame_a, frame_b):
+def xor_matching(frame_a, frame_b, threshold = 0.8):
     equal_shape = frame_a.shape == frame_b.shape 
     if equal_shape and not np.bitwise_xor(frame_a, frame_b).any():
         return True

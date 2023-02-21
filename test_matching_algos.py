@@ -77,5 +77,5 @@ frame2 = video_file.get_random_frame()
 # test all function in frame_matching_algos.py using the test_matching_func
 for func_name in dir(fma):
     func = getattr(fma, func_name) 
-    if callable(func) and (func_name in ["orb"]):
+    if callable(func):# and (func_name in ["orb"]):
         test_matching_func(func, frame1, frame2)

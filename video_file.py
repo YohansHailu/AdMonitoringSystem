@@ -8,11 +8,12 @@ class VideoFile:
         self.video = cv2.VideoCapture(vidoe_file_name)
         self.total_frames = int(self.video.get(cv2.CAP_PROP_FRAME_COUNT))
         self.fps = self.video.get(cv2.CAP_PROP_FPS)
+    
 
-    # get the last frame of the video
     def get_last_frame(self):
         self.video.set(cv2.CAP_PROP_POS_FRAMES, self.total_frames - 1)
         ret, frame = self.video.read()
+        self.video.set(cv2.CAP_PROP_POS_FRAMES, 0)
         if ret:
             return frame
         return None
