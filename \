@@ -1,0 +1,65 @@
+import streamlit as st
+import tempfile 
+import validators
+import os
+
+
+
+
+def get_video_path(uploaded_video):
+    temp_file = tempfile.NamedTemporaryFile(delete=False) 
+
+    # save video file again as temp file
+    temp_file.write(uploaded_video.read()) 
+    return temp_file.name
+
+def ad_input_section():
+    # upload you file here
+
+    ad_video = st.file_uploader("Upload the your Ad please")
+
+    if ad_video:
+        ad_path = get_video_path(ad_video)
+        st.header("your Advertizment video")
+        #_, container, _ = st.columns([0, 3, 0])
+        #container.video(ad_video)
+        st.video(ad_video)
+
+def live_stream_input_section():
+
+    # video uploading
+    live_stream_path = st.text_input("Put link to the live stream")
+
+    is_valid_input = os.path.isfile(live_stream_path) or  validators.url(live_stream_path)
+
+
+
+        # Create a button with the custom CSS class
+    button_clicked = st.button("Submit")
+
+
+
+
+    if button_clicked:
+        if is_valid_input:
+            st.text("here is the live stream video")
+            st.video(live_stream_path)
+        else:
+            st.text("red color: please inter the live stream")
+
+
+
+def monitoring_section():
+    # start moinitoring big botton
+    # progress bar
+    st.button("<h1>Start Recording</h1>")
+    pass
+
+
+
+st.write("<h1>Hello and Welcome to our Project</h1>", unsafe_allow_html=True)
+st.sidebar.header("We might need a side bar")
+
+ad_input_section()
+live_stream_input_section()
+monitoring_section()
