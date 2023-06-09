@@ -60,19 +60,22 @@ def monitoring_section():
     st.write("show the results below: ")
 
     expander1 = st.expander("Time stamps of each Advertizment")
-    expander1.write("hello")
-    expander1.image("https://static.streamlit.io/examples/dice.jpg")
+    expander1.write("ad 1 at 6:00 oclock")
+    expander1.write("ad 2 at 6:14")
+    expander1.write("ad 3 at 6:15")
 
 
     expander2 = st.expander("Display quality of each Advertizemnt")
-    expander2.write("hello")
-    expander2.image("https://static.streamlit.io/examples/dice.jpg")
+    expander2.write("diplay qulaity of ad 1")
+    expander2.write("diplay qulaity of ad 2")
+    expander2.write("diplay qulaity of ad 3")
 
 
     expander3 = st.expander("Sound Quality of Each Advertizment")
-    expander3.write("hello")
-    expander3.image("https://static.streamlit.io/examples/dice.jpg")
-    
+    expander3.write("sound qulaity of ad 1")
+    expander3.write("sound qulaity of ad 2")
+    expander3.write("sound qulaity of ad 3")
+
     if file_submited[0]:
         for _ in stqdm(range(4), st_container=progress_bar):
             sleep(5)
