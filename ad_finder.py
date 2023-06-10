@@ -4,8 +4,14 @@ import imagehash
 from PIL import Image
 from frame_handler import get_n_hashs
 
+def dumb_progress():
+    progress_bar = st.progress(0)
+    for i in range(100):
+        progress_bar.progress(i)
+
 def ad_finder(video_path, ad_hashs, threshold = 12, frame_jump=10):
 
+    progress_bar = st.progress(0)
     video = cv2.VideoCapture(video_path)
     if not video.isOpened():
         print("Error opening video file")
@@ -19,18 +25,23 @@ def ad_finder(video_path, ad_hashs, threshold = 12, frame_jump=10):
     cur_frame_index = 0
     num_detected_frames = 0
     num_detected_ads = 0
+    
+    text = f'<p>The ad was showing: <b style="font-size:40px">{num_detected_ads}</b> times so far</p>'
+    #text_number_ads = st.write(text, unsafe_allow_html=True)
+    text_number_ads  = st.empty()
+    text_number_ads.write(text,unsafe_allow_html=True )
+
 
     one_group_hashs = set(ad_hashs)
     fps = video.get(cv2.CAP_PROP_FPS)
     while True:
-
         if cur_frame_index % 100 == 0: 
+
             print(cur_frame_index)
 
         video.set(cv2.CAP_PROP_POS_FRAMES, cur_frame_index)
         _, stream_frame = video.read()
-
-        h1 = imagehash.average_hash(Image.fromarray(stream_frame))
+        h1 = imagehash.average_hash(Image.fromarray(stream_frame)) 
         if  hash_exist(h1, one_group_hashs, threshold):
             num_detected_frames += 1
             print("frame detected, len of one_group_hash", len(one_group_hashs))
@@ -54,13 +65,13 @@ def ad_finder(video_path, ad_hashs, threshold = 12, frame_jump=10):
 
 
 
-
-
-
-
-
         if cur_frame_index >= total_frames:
             break
+
+        progress_bar.progress(cur_frame_index/total_frames)
+        text = f'<p>The ad was showing: <b style="font-size:40px">{num_detected_ads}</b> times so far</p>'
+        text_number_ads.write(text, unsafe_allow_html=True)
+
 
 def hash_exist(hash, hashs, threshold = 12):
     for h in hashs:
