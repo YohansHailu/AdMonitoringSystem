@@ -9,8 +9,26 @@ from stqdm import stqdm
 from frame_handler import get_n_hashs
 from ad_finder import ad_finder, dumb_progress
 
-st.sidebar.header("Here we put on what the project is")
-st.sidebar.header("And also how to use the project")
+st.sidebar.write("<h1 style='font-size:50px'>📺   AdMonitor</h1>", unsafe_allow_html=True)
+st.sidebar.header("How to Use?")
+
+st.sidebar.write("<li>first add your advertisement video in the browser filei </h1>", unsafe_allow_html=True)
+st.sidebar.write("<li>Then put the link for the live stream and clik on start monitoring button</li>", unsafe_allow_html=True)
+st.sidebar.write("<li>then you will be able to see results at the bootom", unsafe_allow_html=True)
+
+
+
+st.sidebar.write("<h1 style='font-size:30px; padding-top:60px'>👷 Engineers</h1>", unsafe_allow_html=True)
+st.sidebar.write("<li>Yohans Hailu</li>", unsafe_allow_html=True)
+st.sidebar.write("<li>Yohannis solomon</li>", unsafe_allow_html=True)
+st.sidebar.write("<li>Yohanes fiseha</li>", unsafe_allow_html=True)
+
+st.sidebar.write("<h1 style='font-size:30px; padding-top:60px'>📚 Advisor</h1>", unsafe_allow_html=True)
+st.sidebar.write("<b><li>Rediet Million</li></b>", unsafe_allow_html=True)
+
+
+
+
 
 file_submited = [False]
 hashed_ad_frames = [] 
@@ -24,12 +42,13 @@ def get_video_path(uploaded_video):
 
 
 
-st.write("<h1>Hello and Welcome to our Project</h1>", unsafe_allow_html=True)
-ad_video = st.file_uploader("Upload the your Ad please")
+st.write("<h1>Welcome to our Project 👋</h1>", unsafe_allow_html=True)
+#st.write('**Upload your advertisement video here:**')
+ad_video = st.file_uploader('')
 
 if ad_video:
     ad_path = get_video_path(ad_video)
-    st.header("your Advertizment video")
+    st.write('<b style="font-size:25px">Your advertisement video:</b>', unsafe_allow_html=True)
     st.video(ad_video)
 
     ad_path = get_video_path(ad_video)
@@ -39,7 +58,7 @@ if ad_video:
 
 
 
-live_stream_path = st.text_input("Put link to the live stream")
+live_stream_path = st.text_input("**Put the link of stream**")
 is_valid_input = os.path.isfile(live_stream_path) or  validators.url(live_stream_path)
 
 
@@ -47,17 +66,12 @@ is_valid_input = os.path.isfile(live_stream_path) or  validators.url(live_stream
 view_live_button_clicked = False 
 start_scanning_button  = False
 
-view_live_button_clicked = st.button("View the live stream") or view_live_button_clicked 
+view_live_button_clicked = st.button("Display and Start Monitoring") or view_live_button_clicked 
 
 if view_live_button_clicked:
     if is_valid_input:
-        st.text("here is the live stream video")
+        st.write("<u><b style='25px'>Here is the live stream video</b></u>", unsafe_allow_html=True)
         st.video(live_stream_path)
-        
-        print("view button ", view_live_button_clicked)
-        print("view button inside start_scaning", view_live_button_clicked)
-
-        
         
 
         # start scaning
@@ -69,4 +83,4 @@ if view_live_button_clicked:
 
 
     else:
-        st.text("red color: please inter the live stream")
+        st.warning('Please Enter valid link', icon="⚠️")
