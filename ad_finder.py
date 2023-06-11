@@ -3,6 +3,9 @@ import streamlit as st
 import imagehash
 from PIL import Image
 from frame_handler import get_n_hashs
+import datetime
+from order_handler import number_to_ordinal
+from audio_data_handler import get_audio, calculate_sound_quality
 
 def dumb_progress():
     progress_bar = st.progress(0)
@@ -13,6 +16,8 @@ def ad_finder(video_path, ad_hashs, threshold = 12, frame_jump=10):
 
     progress_bar = st.progress(0)
     video = cv2.VideoCapture(video_path)
+    sound, sr = get_audio(video_path)
+
     if not video.isOpened():
         print("Error opening video file")
         return None
@@ -25,11 +30,22 @@ def ad_finder(video_path, ad_hashs, threshold = 12, frame_jump=10):
     cur_frame_index = 0
     num_detected_frames = 0
     num_detected_ads = 0
-    
-    text = f'<p>The ad was showing: <b style="font-size:40px">{num_detected_ads}</b> times so far</p>'
+
+    number_ads_text = f'<p>The ad was showing: <b style="font-size:40px">{num_detected_ads}</b> times so far</p>'
     #text_number_ads = st.write(text, unsafe_allow_html=True)
-    text_number_ads  = st.empty()
-    text_number_ads.write(text,unsafe_allow_html=True )
+    number_ads_componenet  = st.empty()
+
+    time_staps_expander= st.expander("Time stamps of each Advertizment")
+    time_staps_expander.write("here are the time stamps: ", unsafe_allow_html=True)
+
+    display_quality_expander= st.expander("display quality of each advertizment")
+    display_quality_expander.write("here are each display qualities: ", unsafe_allow_html=True)
+
+    sound_quality_expander= st.expander("sound quality of each advertizment")
+    sound_quality_expander.write("here are each sound qualities: ", unsafe_allow_html=True)
+
+
+    number_ads_componenet.write(number_ads_text,unsafe_allow_html=True )
 
 
     one_group_hashs = set(ad_hashs)
@@ -55,23 +71,38 @@ def ad_finder(video_path, ad_hashs, threshold = 12, frame_jump=10):
             num_detected_frames  = 0
             one_group_hashs = set(ad_hashs)
             
-            time_second = cur_frame_index//fps
-            time_minute = cur_frame_index//fps
-
-            print("Time of the ads roughly ", time_minute //60,"m", time_second % 60 , "s")
+            total_second = cur_frame_index//fps 
 
             cur_frame_index += 100*frame_jump
             print("full ads has been detected", len(one_group_hashs), "must be", len(ad_hashs), "numer of ads detected", num_detected_ads)
 
+            time_stap_text = str(datetime.timedelta(seconds=total_second))
+            time_staps_expander.write("The "+number_to_ordinal(num_detected_ads)+ " Ad is Detected at:  " + time_stap_text, unsafe_allow_html=True)
+
+            display_quality_text = "Video Resolution of the " + number_to_ordinal(num_detected_ads) + " Ad is "+ str(Image.fromarray(stream_frame).size)
+            display_quality_expander.write(display_quality_text)
+
+
+
+            # totatal sound_part
+            start = max(int(total_second) - 5, 0)
+            end  = int(total_second)
+            sound_part = sound[start*sr:end*sr]
+            sound_quality = calculate_sound_quality(sound_part)
+
+            
+            sound_quality_str = "{:.2f}".format(sound_quality)
+            sound_quality_text = "Sound daynamic range of the " + number_to_ordinal(num_detected_ads) + " Ad is "+ sound_quality_str
+            sound_quality_expander.write(sound_quality_text)
 
 
         if cur_frame_index >= total_frames:
             break
 
         progress_bar.progress(cur_frame_index/total_frames)
-        text = f'<p>The ad was showing: <b style="font-size:40px">{num_detected_ads}</b> times so far</p>'
-        text_number_ads.write(text, unsafe_allow_html=True)
-
+        number_ads_text = f'<p>The ad was showing : <b style="font-size:40px">{num_detected_ads}</b> times so far</p>'
+        number_ads_componenet.write(number_ads_text, unsafe_allow_html=True)
+        
 
 def hash_exist(hash, hashs, threshold = 12):
     for h in hashs:

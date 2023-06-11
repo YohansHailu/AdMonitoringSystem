@@ -63,24 +63,6 @@ if view_live_button_clicked:
         #dumb_progress()
         ad_finder(live_stream_path, hashed_ad_frames )
         st.markdown("----")
-
-        st.write("show the results below: ")
-        expander1 = st.expander("Time stamps of each Advertizment")
-        for i in range(3):
-            expander1.write("ad 1 at 6:00 oclock")
-
-
-        expander2 = st.expander("Display quality of each Advertizemnt")
-        for i in range(3):
-            expander2.write("diplay qulaity of ad 1")
-
-
-        expander3 = st.expander("Sound Quality of Each Advertizment")
-        for i in range(3):
-            expander3.write("sound qulaity of ad 1")
-
-        # The Ad was showed 
-
         st.button("Save result as Text") 
 
 
