@@ -6,31 +6,27 @@ from frame_handler import get_n_hashs
 import datetime
 from order_handler import number_to_ordinal
 from audio_data_handler import get_audio, calculate_sound_quality
-from ad_finder_internet import ad_finder_internet
-import validators
+from vidgear.gears import CamGear
 
 def dumb_progress():
     progress_bar = st.progress(0)
     for i in range(100):
         progress_bar.progress(i)
 
-def ad_finder(video_path, ad_hashs, threshold = 12, frame_jump=10):
+def ad_finder_internet(video_path, ad_hashs, threshold = 12, frame_jump=10):
     
-    if validators.url(video_path):
-        ad_finder_internet(video_path, ad_hashs, threshold = 12, frame_jump=10)
-        return
-
-
     progress_bar = st.progress(0)
 
-    video = cv2.VideoCapture(video_path)
-    total_frames = int(video.get(cv2.CAP_PROP_FRAME_COUNT))
+    video = CamGear(source=video_path, stream_mode = True, logging=True).start()
+    total_frames = int(video.stream.get(cv2.CAP_PROP_FRAME_COUNT))
+    if  total_frames <= 0:
+        total_frames = 1000_00000_0000 
 
-    sound, sr = get_audio(video_path)
+    #sound, sr = get_audio(video_path)
 
-    if not video.isOpened():
-        print("Error opening video file")
-        return None
+    #if not video.isOpened():
+    #    print("Error opening video file")
+    #    return None
     
     # handle st.progress here
 
@@ -58,14 +54,19 @@ def ad_finder(video_path, ad_hashs, threshold = 12, frame_jump=10):
 
 
     one_group_hashs = set(ad_hashs)
-    fps = video.get(cv2.CAP_PROP_FPS)
+    fps = video.stream.get(cv2.CAP_PROP_FPS)
+    index = 0
     while True:
-        if cur_frame_index % 100 == 0: 
+        if index:
+            print(index)
 
-            print(cur_frame_index)
+        #video.stream.set(cv2.CAP_PROP_POS_FRAMES, cur_frame_index)
+        stream_frame = video.read()
 
-        video.set(cv2.CAP_PROP_POS_FRAMES, cur_frame_index)
-        _, stream_frame = video.read()
+        if index < cur_frame_index:
+            index += 1
+            continue
+        index += 1
         h1 = imagehash.average_hash(Image.fromarray(stream_frame)) 
         if  hash_exist(h1, one_group_hashs, threshold):
             num_detected_frames += 1
@@ -94,21 +95,24 @@ def ad_finder(video_path, ad_hashs, threshold = 12, frame_jump=10):
 
 
             # totatal sound_part
-            start = max(int(total_second) - 5, 0)
-            end  = int(total_second)
-            sound_part = sound[start*sr:end*sr]
-            sound_quality = calculate_sound_quality(sound_part)
+            #start = max(int(total_second) - 5, 0)
+            #end  = int(total_second)
+            #sound_part = sound[start*sr:end*sr]
+            #sound_quality = "N/A"#calculate_sound_quality(sound_part)
 
             
-            sound_quality_str = "{:.2f}".format(sound_quality)
+            sound_quality_str = "N/A"#"{:.2f}".format(sound_quality)
             sound_quality_text = "Sound daynamic range of the " + number_to_ordinal(num_detected_ads) + " Ad is "+ sound_quality_str
             sound_quality_expander.write(sound_quality_text)
 
 
         if cur_frame_index >= total_frames:
             break
-
-        progress_bar.progress(cur_frame_index/total_frames)
+        
+        if total_frames <  1000_00000_0000:
+            progress_bar.progress(cur_frame_index/total_frames)
+        else:
+            progress_bar.progress(0.6, text="LIVE")
         number_ads_text = f'<p>The ad was showing : <b style="font-size:40px">{num_detected_ads}</b> times so far</p>'
         number_ads_componenet.write(number_ads_text, unsafe_allow_html=True)
         
@@ -136,7 +140,7 @@ if __name__ == "__main__":
 
     hashs = get_n_hashs(ad_path)
 
-    ad_finder(live_path, hashs)
+    #ad_finder(live_path, hashs)
 
 
 

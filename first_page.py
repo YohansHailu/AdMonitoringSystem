@@ -43,6 +43,7 @@ live_stream_path = st.text_input("Put link to the live stream")
 is_valid_input = os.path.isfile(live_stream_path) or  validators.url(live_stream_path)
 
 
+
 view_live_button_clicked = False 
 start_scanning_button  = False
 
