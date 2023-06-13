@@ -44,7 +44,7 @@ def get_video_path(uploaded_video):
 
 st.write("<h1>Welcome to our Project 👋</h1>", unsafe_allow_html=True)
 #st.write('**Upload your advertisement video here:**')
-ad_video = st.file_uploader('')
+ad_video = st.file_uploader('Upload your Ad video')
 
 if ad_video:
     ad_path = get_video_path(ad_video)
