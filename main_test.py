@@ -21,6 +21,7 @@ res = matching_frame_in_video(walia_ad_file_name, frame_a)
 print(res)
 
 
+
 #video_file_name = "./WALIA BEER TVC (Directors' Cut) [DPJBDupSiwA].webm"
 #random_frame = get_random_frame(video_file_name, 0.2)
 #random_frame2 = get_random_frame(video_file_name, 0.2)
